@@ -1,3 +1,17 @@
+1.4.0 / 2015-02-01
+==================
+
+  * Prefer `gzip` over `deflate` on the server
+    - Not all clients agree on what "deflate" coding means
+
+1.3.1 / 2015-01-31
+==================
+
+  * deps: accepts@~1.2.3
+    - deps: mime-types@~2.0.8
+  * deps: compressible@~2.0.2
+    - deps: mime-db@'>= 1.1.2 < 2'
+
 1.3.0 / 2014-12-30
 ==================
 
