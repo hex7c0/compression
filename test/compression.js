@@ -396,20 +396,6 @@ describe('compression()', function(){
     })
   })
 
-  describe('when "Accept-Encoding: deflate"', function () {
-    it('should respond with deflate', function (done) {
-      var server = createServer({ threshold: 0 }, function (req, res) {
-        res.setHeader('Content-Type', 'text/plain')
-        res.end('hello, world')
-      })
-
-      request(server)
-      .get('/')
-      .set('Accept-Encoding', 'deflate')
-      .expect('Content-Encoding', 'deflate', done)
-    })
-  })
-
   describe('when "Accept-Encoding: gzip, deflate"', function () {
     it('should respond with gzip', function (done) {
       var server = createServer({ threshold: 0 }, function (req, res) {
@@ -547,38 +533,6 @@ describe('compression()', function(){
       .request()
       .on('response', function (res) {
         assert.equal(res.headers['content-encoding'], 'gzip')
-        res.on('data', write)
-        res.on('end', function(){
-          assert.equal(chunks, 20)
-          done()
-        })
-      })
-      .end()
-    })
-
-    it('should flush small chunks for deflate', function (done) {
-      var chunks = 0
-      var resp
-      var server = createServer({ threshold: 0 }, function (req, res) {
-        resp = res
-        res.setHeader('Content-Type', 'text/plain')
-        write()
-      })
-
-      function write() {
-        chunks++
-        if (chunks === 20) return resp.end()
-        if (chunks > 20) return chunks--
-        resp.write('..')
-        resp.flush()
-      }
-
-      request(server)
-      .get('/')
-      .set('Accept-Encoding', 'deflate')
-      .request()
-      .on('response', function (res) {
-        assert.equal(res.headers['content-encoding'], 'deflate')
         res.on('data', write)
         res.on('end', function(){
           assert.equal(chunks, 20)
