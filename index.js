@@ -3,7 +3,7 @@
  * @file compression
  * @module compression-zlib
  * @subpackage main
- * @version 1.0.0
+ * @version 2.0.0
  * @author hex7c0 <hex7c0@gmail.com>
  * @copyright 2010 Sencha Inc.
  * @copyright 2011 TJ Holowaychuk

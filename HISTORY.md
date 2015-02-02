@@ -1,3 +1,11 @@
+2.0.0 / 2015-02-02
+==================
+
+  * Fork from https://github.com/expressjs/compression
+  * Add "available" option
+  * Add "zlib_options" option
+  * Add benchmark
+
 1.4.0 / 2015-02-01
 ==================
 
