@@ -1,0 +1,13 @@
+original script by https://github.com/kesla
+port from https://github.com/kesla/node-snappy
+look at https://github.com/kesla/node-snappy/blob/master/benchmark/benchmark.js
+
+install dependencies
+`npm install`
+
+run synthetic benchmark
+`node benchmark.js`
+
+run web benchmark or go to https://gist.github.com/hex7c0/25165f2f4650dfe16832
+`node web.js`
+`ab.sh`
