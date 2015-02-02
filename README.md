@@ -1,10 +1,14 @@
-# compression
+# [compression-zlib](http://supergiovane.tk/#/compression-zlib)
 
-[![NPM Version][npm-image]][npm-url]
-[![NPM Downloads][downloads-image]][downloads-url]
-[![Build Status][travis-image]][travis-url]
-[![Test Coverage][coveralls-image]][coveralls-url]
-[![Gratipay][gratipay-image]][gratipay-url]
+[![NPM version](https://badge.fury.io/js/compression-zlib.svg)](http://badge.fury.io/js/compression-zlib)
+[![Build Status](https://travis-ci.org/hex7c0/compression-zlib.svg)](https://travis-ci.org/hex7c0/compression-zlib)
+[![Dependency Status](https://david-dm.org/hex7c0/compression-zlib/status.svg)](https://david-dm.org/hex7c0/compression-zlib)
+
+This repository began as a GitHub fork of
+[expressjs/compression](https://github.com/expressjs/compression)
+with little difference:
+ - `available` - **Array** Set available compression algorithm *(default "['gzip', 'identity']")*
+ - `zlib` - **Object** Set zlib options *(look at [benchmark](benchmark))*
 
 Node.js compression middleware.
 
@@ -16,7 +20,11 @@ The following compression codings are supported:
 ## Install
 
 ```bash
-$ npm install compression
+$ npm install compression-zlib
+```
+or
+```bash
+git clone git://github.com/hex7c0/compression-zlib.git
 ```
 
 ## API
@@ -205,17 +213,10 @@ app.get('/events', function (req, res) {
 })
 ```
 
+## Examples
+
+Take a look at my [examples](examples)
+
 ## License
 
 [MIT](LICENSE)
-
-[npm-image]: https://img.shields.io/npm/v/compression.svg?style=flat
-[npm-url]: https://npmjs.org/package/compression
-[travis-image]: https://img.shields.io/travis/expressjs/compression.svg?style=flat
-[travis-url]: https://travis-ci.org/expressjs/compression
-[coveralls-image]: https://img.shields.io/coveralls/expressjs/compression.svg?style=flat
-[coveralls-url]: https://coveralls.io/r/expressjs/compression?branch=master
-[downloads-image]: https://img.shields.io/npm/dm/compression.svg?style=flat
-[downloads-url]: https://npmjs.org/package/compression
-[gratipay-image]: https://img.shields.io/gratipay/dougwilson.svg?style=flat
-[gratipay-url]: https://www.gratipay.com/dougwilson/
