@@ -1,187 +1,198 @@
-/*!
- * compression
- * Copyright(c) 2010 Sencha Inc.
- * Copyright(c) 2011 TJ Holowaychuk
- * Copyright(c) 2014 Jonathan Ong
- * Copyright(c) 2014 Douglas Christopher Wilson
- * MIT Licensed
- */
-
+'use strict';
 /**
- * Module dependencies.
- * @private
+ * @file compression
+ * @module compression-zlib
+ * @subpackage main
+ * @version 1.0.0
+ * @author hex7c0 <hex7c0@gmail.com>
+ * @copyright 2010 Sencha Inc.
+ * @copyright 2011 TJ Holowaychuk
+ * @copyright 2014 Jonathan Ong
+ * @copyright 2014 Douglas Christopher Wilson
+ * @copyright 2015 hex7c0
+ * @license MIT
  */
 
+// import
 var accepts = require('accepts')
 var bytes = require('bytes')
 var compressible = require('compressible')
-var debug = require('debug')('compression')
+var debug = require('debug')('compression-zlib')
 var onHeaders = require('on-headers')
 var vary = require('vary')
 var zlib = require('zlib')
 
 /**
- * Module exports.
+ * Add bufferred listeners to stream
  */
+function addListeners(stream, on, listeners) {
 
-module.exports = compression
-module.exports.filter = shouldCompress
+  for (var i = 0; i < listeners.length; i++) {
+    on.apply(stream, listeners[i]);
+  }
+  return;
+}
 
 /**
- * Compress response data with gzip / deflate.
- *
+ * No-operation function
+ */
+function noop() {
+
+  return;
+}
+
+/**
+ * Compress response data with gzip / deflate
+ * 
  * @param {Object} options
  * @return {Function} middleware
- * @public
  */
-
 function compression(options) {
-  var opts = options || {}
 
-  var filter = opts.filter || shouldCompress
-  var threshold = typeof opts.threshold === 'string'
-    ? bytes(opts.threshold)
-    : opts.threshold
+  var opts = options || Object.create(null);
+  var filter = opts.filter || shouldCompress;
+  var available = opts.available || [ 'gzip', 'identity' ];
+  var zlib_options = opts.zlib || {
+    level: zlib.Z_BEST_SPEED,
+    memLevel: zlib.Z_MAX_MEMLEVEL,
+    strategy: zlib.Z_FILTERED
+  };
+  var threshold = typeof opts.threshold === 'string' ? bytes(opts.threshold)
+    : opts.threshold;
 
   if (threshold == null) {
-    threshold = 1024
+    threshold = 1024;
   }
 
-  return function compression(req, res, next){
-    var compress = true
-    var listeners = []
-    var write = res.write
-    var on = res.on
-    var end = res.end
-    var stream
+  return function compression(req, res, next) {
+
+    var compress = true;
+    var listeners = [];
+    var write = res.write;
+    var on = res.on;
+    var end = res.end;
+    var stream;
 
     // see #8
-    req.on('close', function(){
-      res.write = res.end = noop
+    req.on('close', function() {
+
+      res.write = res.end = noop;
+      return;
     });
 
     // flush is noop by default
     res.flush = noop;
 
     // proxy
+    res.write = function(chunk, encoding) {
 
-    res.write = function(chunk, encoding){
       if (!this._header) {
         // if content-length is set and is lower
         // than the threshold, don't compress
-        var len = Number(res.getHeader('Content-Length'))
-        checkthreshold(len)
+        var len = Number(res.getHeader('Content-Length'));
+        checkthreshold(len);
         this._implicitHeader();
       }
-      return stream
-        ? stream.write(new Buffer(chunk, encoding))
-        : write.call(res, chunk, encoding);
+      return stream ? stream.write(new Buffer(chunk, encoding)) : write.call(
+        res, chunk, encoding);
     };
 
-    res.end = function(chunk, encoding){
-      var len
+    res.end = function(chunk, encoding) {
 
+      var len;
       if (chunk) {
-        len = Buffer.isBuffer(chunk)
-          ? chunk.length
-          : Buffer.byteLength(chunk, encoding)
+        len = Buffer.isBuffer(chunk) ? chunk.length : Buffer.byteLength(chunk,
+          encoding);
       }
-
       if (!this._header) {
-        len = Number(this.getHeader('Content-Length')) || len
-        checkthreshold(len)
-        this._implicitHeader()
+        len = Number(this.getHeader('Content-Length')) || len;
+        checkthreshold(len);
+        this._implicitHeader();
       }
-
-      return stream
-        ? stream.end(chunk, encoding)
-        : end.call(res, chunk, encoding)
+      return stream ? stream.end(chunk, encoding) : end.call(res, chunk,
+        encoding);
     };
 
-    res.on = function(type, listener){
+    res.on = function(type, listener) {
+
       if (!listeners || type !== 'drain') {
-        return on.call(this, type, listener)
+        return on.call(this, type, listener);
       }
 
       if (stream) {
-        return stream.on(type, listener)
+        return stream.on(type, listener);
       }
 
       // buffer listeners for future stream
-      listeners.push([type, listener])
-
-      return this
+      listeners.push([ type, listener ]);
+      return this;
     }
 
     function checkthreshold(len) {
+
       if (compress && len < threshold) {
-        debug('size below threshold')
-        compress = false
+        debug('size below threshold');
+        compress = false;
       }
+      return;
     }
 
     function nocompress(msg) {
-      debug('no compression' + (msg ? ': ' + msg : ''))
-      addListeners(res, on, listeners)
-      listeners = null
+
+      debug('no compression' + (msg ? ': ' + msg : ''));
+      addListeners(res, on, listeners);
+      listeners = null;
+      return;
     }
 
-    onHeaders(res, function(){
+    onHeaders(res, function() {
+
       // determine if request is filtered
       if (!filter(req, res)) {
-        nocompress('filtered')
-        return
+        return nocompress('filtered');
       }
 
       // vary
-      vary(res, 'Accept-Encoding')
+      vary(res, 'Accept-Encoding');
 
       if (!compress) {
-        nocompress()
-        return
+        return nocompress();
       }
 
       var encoding = res.getHeader('Content-Encoding') || 'identity';
 
-      // already encoded
-      if ('identity' !== encoding) {
-        nocompress('already encoded')
-        return
-      }
-
-      // head
-      if ('HEAD' === req.method) {
-        nocompress('HEAD request')
-        return
+      if ('identity' !== encoding) { // already encoded
+        return nocompress('already encoded');
+      } else if ('HEAD' === req.method) { // head
+        return nocompress('HEAD request');
       }
 
       // compression method
-      var accept = accepts(req)
-      var method = accept.encoding(['gzip', 'deflate', 'identity'])
-
-      // we really don't prefer deflate
-      if (method === 'deflate' && accept.encoding(['gzip'])) {
-        method = accept.encoding(['gzip', 'identity'])
-      }
+      var accept = accepts(req);
+      var method = accept.encoding(available);
 
       // negotiation failed
       if (!method || method === 'identity') {
-        nocompress('not acceptable')
-        return
+        return nocompress('not acceptable');
       }
 
       // compression stream
-      debug('%s compression', method)
-      stream = method === 'gzip'
-        ? zlib.createGzip(opts)
-        : zlib.createDeflate(opts)
+      if (method === 'gzip') {
+        stream = zlib.createGzip(zlib_options);
+      } else if (method === 'deflate') {
+        stream = zlib.createDeflate(zlib_options);
+      } else {
+        return nocompress('not acceptable');
+      }
+      debug('%s compression', method);
 
       // add bufferred listeners to stream
-      addListeners(stream, stream.on, listeners)
+      addListeners(stream, stream.on, listeners);
 
       // overwrite the flush method
-      res.flush = function(){
-        stream.flush();
+      res.flush = function() {
+
+        return stream.flush();
       }
 
       // header fields
@@ -189,55 +200,37 @@ function compression(options) {
       res.removeHeader('Content-Length');
 
       // compression
-      stream.on('data', function(chunk){
+      stream.on('data', function(chunk) {
+
         if (write.call(res, chunk) === false) {
-          stream.pause()
+          stream.pause();
         }
-      });
+        return;
+      }).on('end', function() {
 
-      stream.on('end', function(){
-        end.call(res);
+        return end.call(res);
       });
-
       on.call(res, 'drain', function() {
-        stream.resume()
+
+        return stream.resume();
       });
     });
 
-    next();
+    return next();
   };
 }
-
-/**
- * Add bufferred listeners to stream
- * @private
- */
-
-function addListeners(stream, on, listeners) {
-  for (var i = 0; i < listeners.length; i++) {
-    on.apply(stream, listeners[i])
-  }
-}
-
-/**
- * No-operation function
- * @private
- */
-
-function noop(){}
+module.exports = compression
 
 /**
  * Default filter function.
- * @private
  */
-
 function shouldCompress(req, res) {
-  var type = res.getHeader('Content-Type')
 
+  var type = res.getHeader('Content-Type');
   if (type === undefined || !compressible(type)) {
-    debug('%s not compressible', type)
-    return false
+    debug('%s not compressible', type);
+    return false;
   }
-
-  return true
+  return true;
 }
+module.exports.filter = shouldCompress
