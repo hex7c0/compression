@@ -1,11 +1,12 @@
 # [compression-zlib](http://supergiovane.tk/#/compression-zlib)
 
-[![NPM version](https://badge.fury.io/js/compression-zlib.svg)](http://badge.fury.io/js/compression-zlib)
-[![Build Status](https://travis-ci.org/hex7c0/compression-zlib.svg)](https://travis-ci.org/hex7c0/compression-zlib)
-[![Dependency Status](https://david-dm.org/hex7c0/compression-zlib/status.svg)](https://david-dm.org/hex7c0/compression-zlib)
+[![NPM version](https://img.shields.io/npm/v/compression-zlib.svg)](https://www.npmjs.com/package/compression-zlib)
+[![Linux Status](https://img.shields.io/travis/hex7c0/compression-zlib.svg?label=linux)](https://travis-ci.org/hex7c0/compression-zlib)
+[![Windows Status](https://img.shields.io/appveyor/ci/hex7c0/compression-zlib.svg?label=windows)](https://ci.appveyor.com/project/hex7c0/compression-zlib)
+[![Dependency Status](https://img.shields.io/david/hex7c0/compression-zlib.svg)](https://david-dm.org/hex7c0/compression-zlib)
+[![Coveralls](https://img.shields.io/coveralls/hex7c0/compression-zlib.svg)](https://coveralls.io/r/hex7c0/compression-zlib)
 
-This repository began as a GitHub fork of
-[expressjs/compression](https://github.com/expressjs/compression)
+This repository began as a fork of [expressjs/compression](https://github.com/expressjs/compression)
 with little difference:
  - `available` - **Array** Set available compression algorithm *(default "['gzip', 'identity']")*
  - `zlib` - **Object** Set zlib options *(look at [benchmark](benchmark))*
@@ -30,7 +31,7 @@ git clone git://github.com/hex7c0/compression-zlib.git
 ## API
 
 ```js
-var compression = require('compression')
+var compression = require('compression-zlib')
 ```
 
 ### compression([options])
@@ -186,8 +187,8 @@ You can achieve this by calling `res.flush()` when you need the data written to
 actually make it to the client.
 
 ```js
-var compression = require('compression')
-var express     = require('express')
+var compression = require('compression-zlib')
+var express = require('express')
 
 var app = express()
 
