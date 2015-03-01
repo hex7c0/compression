@@ -1,4 +1,11 @@
-2.0.0 / 2015-02-02
+v2.0.1 / 2015-03-01
+==================
+
+  * Update `accepts`@1.2.4
+  * `coveralls` test
+  * `windows` test
+
+v2.0.0 / 2015-02-02
 ==================
 
   * Fork from https://github.com/expressjs/compression
