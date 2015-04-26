@@ -1,3 +1,11 @@
+v2.0.2 / 2015-04-26
+==================
+
+  * Fix error when code calls `res.end(str, encoding)`
+  * Update `debug`@2.1.3
+  * Update `bytes`@2.0.0
+  * Update `accepts`@1.2.5
+
 v2.0.1 / 2015-03-01
 ==================
 
