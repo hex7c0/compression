@@ -109,8 +109,12 @@ function compression(options) {
         checkthreshold(len);
         this._implicitHeader();
       }
-      return stream ? stream.end(chunk, encoding) : end.call(res, chunk,
-        encoding);
+      if (!stream) {
+        return end.call(res, chunk, encoding)
+      }
+
+      // write Buffer for Node.js 0.8
+      return chunk ? stream.end(new Buffer(chunk, encoding)) : stream.end()
     };
 
     res.on = function(type, listener) {
