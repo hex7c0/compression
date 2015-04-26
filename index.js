@@ -13,14 +13,13 @@
  * @license MIT
  */
 
-// import
-var accepts = require('accepts')
-var bytes = require('bytes')
-var compressible = require('compressible')
-var debug = require('debug')('compression-zlib')
-var onHeaders = require('on-headers')
-var vary = require('vary')
-var zlib = require('zlib')
+var accepts = require('accepts');
+var bytes = require('bytes');
+var compressible = require('compressible');
+var debug = require('debug')('compression-zlib');
+var onHeaders = require('on-headers');
+var vary = require('vary');
+var zlib = require('zlib');
 
 /**
  * Add bufferred listeners to stream
@@ -110,11 +109,11 @@ function compression(options) {
         this._implicitHeader();
       }
       if (!stream) {
-        return end.call(res, chunk, encoding)
+        return end.call(res, chunk, encoding);
       }
 
       // write Buffer for Node.js 0.8
-      return chunk ? stream.end(new Buffer(chunk, encoding)) : stream.end()
+      return chunk ? stream.end(new Buffer(chunk, encoding)) : stream.end();
     };
 
     res.on = function(type, listener) {
@@ -130,7 +129,7 @@ function compression(options) {
       // buffer listeners for future stream
       listeners.push([ type, listener ]);
       return this;
-    }
+    };
 
     function checkthreshold(len) {
 
@@ -197,7 +196,7 @@ function compression(options) {
       res.flush = function() {
 
         return stream.flush();
-      }
+      };
 
       // header fields
       res.setHeader('Content-Encoding', method);
@@ -223,7 +222,7 @@ function compression(options) {
     return next();
   };
 }
-module.exports = compression
+module.exports = compression;
 
 /**
  * Default filter function.
@@ -237,4 +236,4 @@ function shouldCompress(req, res) {
   }
   return true;
 }
-module.exports.filter = shouldCompress
+module.exports.filter = shouldCompress;
