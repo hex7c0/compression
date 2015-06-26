@@ -204,6 +204,8 @@ describe(
 
         if (--wait !== 0) return
 
+        
+
         assert.ok(drained)
         done()
       }
@@ -211,6 +213,10 @@ describe(
       function pressure() {
 
         if (!buf || !resp || !client) return
+
+        
+
+                
 
         
 
@@ -271,6 +277,8 @@ describe(
 
         if (--wait !== 0) return
 
+        
+
         assert.ok(drained)
         done()
       }
@@ -278,6 +286,10 @@ describe(
       function pressure() {
 
         if (!buf || !resp || !client) return
+
+        
+
+                
 
         
 
@@ -456,6 +468,20 @@ describe(
 
           request(server).get('/').set('Accept-Encoding', 'gzip').expect(
             shouldNotHaveHeader('Content-Encoding')).expect(200, '....', done)
+        })
+
+        it('should work with res.end(null)', function(done) {
+
+          var server = createServer({
+            threshold: 1000
+          }, function(req, res) {
+
+            res.setHeader('Content-Type', 'text/plain')
+            res.end(null)
+          })
+
+          request(server).get('/').set('Accept-Encoding', 'gzip').expect(200,
+            '', done)
         })
       })
 

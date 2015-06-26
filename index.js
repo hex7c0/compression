@@ -33,6 +33,19 @@ function addListeners(stream, on, listeners) {
 }
 
 /**
+ * Get the length of a given chunk
+ */
+function chunkLength(chunk, encoding) {
+
+  if (!chunk) {
+    return;
+  }
+
+  return !Buffer.isBuffer(chunk) ? Buffer.byteLength(chunk, encoding)
+    : chunk.length;
+}
+
+/**
  * No-operation function
  */
 function noop() {
@@ -65,7 +78,7 @@ function compression(options) {
 
   return function compression(req, res, next) {
 
-    var compress = true;
+    var length;
     var listeners = [];
     var write = res.write;
     var on = res.on;
@@ -86,10 +99,6 @@ function compression(options) {
     res.write = function(chunk, encoding) {
 
       if (!this._header) {
-        // if content-length is set and is lower
-        // than the threshold, don't compress
-        var len = Number(res.getHeader('Content-Length'));
-        checkthreshold(len);
         this._implicitHeader();
       }
       return stream ? stream.write(new Buffer(chunk, encoding)) : write.call(
@@ -98,18 +107,17 @@ function compression(options) {
 
     res.end = function(chunk, encoding) {
 
-      var len;
-      if (chunk) {
-        len = Buffer.isBuffer(chunk) ? chunk.length : Buffer.byteLength(chunk,
-          encoding);
-      }
       if (!this._header) {
-        len = Number(this.getHeader('Content-Length')) || len;
-        checkthreshold(len);
+        // estimate the length
+        if (!this.getHeader('Content-Length')) {
+          length = chunkLength(chunk, encoding);
+        }
+
         this._implicitHeader();
       }
+
       if (!stream) {
-        return end.call(res, chunk, encoding);
+        return end.call(this, chunk, encoding);
       }
 
       // write Buffer for Node.js 0.8
@@ -131,18 +139,9 @@ function compression(options) {
       return this;
     };
 
-    function checkthreshold(len) {
-
-      if (compress && len < threshold) {
-        debug('size below threshold');
-        compress = false;
-      }
-      return;
-    }
-
     function nocompress(msg) {
 
-      debug('no compression' + (msg ? ': ' + msg : ''));
+      debug('no compression: %s', msg);
       addListeners(res, on, listeners);
       listeners = null;
       return;
@@ -158,8 +157,11 @@ function compression(options) {
       // vary
       vary(res, 'Accept-Encoding');
 
-      if (!compress) {
-        return nocompress();
+      // content-length below threshold
+      if (Number(res.getHeader('Content-Length')) < threshold
+        || length < threshold) {
+        nocompress('size below threshold');
+        return;
       }
 
       var encoding = res.getHeader('Content-Encoding') || 'identity';
