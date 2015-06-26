@@ -46,14 +46,6 @@ function chunkLength(chunk, encoding) {
 }
 
 /**
- * No-operation function
- */
-function noop() {
-
-  return;
-}
-
-/**
  * Compress response data with gzip / deflate
  * 
  * @param {Object} options
@@ -86,8 +78,13 @@ function compression(options) {
     var end = res.end;
     var stream;
 
-    // flush is noop by default
-    res.flush = noop;
+    // flush
+    res.flush = function flush() {
+
+      if (stream) {
+        stream.flush();
+      }
+    };
 
     // proxy
     res.write = function(chunk, encoding) {
@@ -196,12 +193,6 @@ function compression(options) {
 
       // add bufferred listeners to stream
       addListeners(stream, stream.on, listeners);
-
-      // overwrite the flush method
-      res.flush = function() {
-
-        return stream.flush();
-      };
 
       // header fields
       res.setHeader('Content-Encoding', method);
