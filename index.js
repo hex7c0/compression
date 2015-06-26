@@ -78,6 +78,7 @@ function compression(options) {
 
   return function compression(req, res, next) {
 
+    var ended = false;
     var length;
     var listeners = [];
     var write = res.write;
@@ -85,19 +86,15 @@ function compression(options) {
     var end = res.end;
     var stream;
 
-    // see #8
-    req.on('close', function() {
-
-      res.write = res.end = noop;
-      return;
-    });
-
     // flush is noop by default
     res.flush = noop;
 
     // proxy
     res.write = function(chunk, encoding) {
 
+      if (ended === true) {
+        return false;
+      }
       if (!this._header) {
         this._implicitHeader();
       }
@@ -107,6 +104,9 @@ function compression(options) {
 
     res.end = function(chunk, encoding) {
 
+      if (ended === true) {
+        return false;
+      }
       if (!this._header) {
         // estimate the length
         if (!this.getHeader('Content-Length')) {
@@ -119,6 +119,9 @@ function compression(options) {
       if (!stream) {
         return end.call(this, chunk, encoding);
       }
+
+      // mark ended
+      ended = true;
 
       // write Buffer for Node.js 0.8
       return chunk ? stream.end(new Buffer(chunk, encoding)) : stream.end();
