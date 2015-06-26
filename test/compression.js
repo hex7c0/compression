@@ -202,9 +202,7 @@ describe(
 
       function complete() {
 
-        if (--wait !== 0) return
-
-        
+        if (--wait !== 0) return;
 
         assert.ok(drained)
         done()
@@ -212,13 +210,7 @@ describe(
 
       function pressure() {
 
-        if (!buf || !resp || !client) return
-
-        
-
-                
-
-        
+        if (!buf || !resp || !client) return;
 
         while (resp.write(buf) !== false) {
           resp.flush()
@@ -275,9 +267,7 @@ describe(
 
       function complete() {
 
-        if (--wait !== 0) return
-
-        
+        if (--wait !== 0) return;
 
         assert.ok(drained)
         done()
@@ -285,13 +275,7 @@ describe(
 
       function pressure() {
 
-        if (!buf || !resp || !client) return
-
-        
-
-                
-
-        
+        if (!buf || !resp || !client) return;
 
         while (resp.write(buf) !== false) {
           resp.flush()
@@ -470,6 +454,20 @@ describe(
             shouldNotHaveHeader('Content-Encoding')).expect(200, '....', done)
         })
 
+        it('should consider res.end() as 0 length', function(done) {
+
+          var server = createServer({
+            threshold: 1
+          }, function(req, res) {
+
+            res.setHeader('Content-Type', 'text/plain')
+            res.end()
+          })
+
+          request(server).get('/').set('Accept-Encoding', 'gzip').expect(
+            shouldNotHaveHeader('Content-Encoding')).expect(200, '', done)
+        })
+
         it('should work with res.end(null)', function(done) {
 
           var server = createServer({
@@ -480,8 +478,8 @@ describe(
             res.end(null)
           })
 
-          request(server).get('/').set('Accept-Encoding', 'gzip').expect(200,
-            '', done)
+          request(server).get('/').set('Accept-Encoding', 'gzip').expect(
+            shouldNotHaveHeader('Content-Encoding')).expect(200, '', done)
         })
       })
 
