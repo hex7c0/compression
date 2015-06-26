@@ -1,3 +1,15 @@
+v2.1.0 / 2015-06-26
+==================
+
+  * Fix return value from `.end` and `.write` after end
+  * Improve detection of zero-length body without `Content-Length`
+  * Remove flush reassignment
+  * Simplify threshold detection
+  * Update `bytes`@2.1.0
+  * Update `accepts`@1.2.9
+  * Update `compressible`@2.0.3
+  * Update `debug`@2.2.0
+
 v2.0.2 / 2015-04-26
 ==================
 
