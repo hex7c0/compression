@@ -1,6 +1,6 @@
 'use strict';
 /**
- * @file compression example
+ * @file express example
  * @module compression-zlib
  * @subpackage examples
  * @version 0.0.1
@@ -11,21 +11,14 @@
 /**
  * initialize module
  */
-// import
 var compression = require('..'); // use require('compression-zlib') instead
 var app = require('express')();
 var file = require('fs').readFileSync('../benchmark/s.cc');
 
 // using middleware
-app.use(compression());
+app.use(compression()).get('/', function(req, res) {
 
-// express routing
-app.get('/', function(req, res) {
-
-  res.setHeader('Content-Type', 'text/plain')
-  res.send(file)
-});
-
-// server starting
-app.listen(3000);
+  res.setHeader('Content-Type', 'text/plain');
+  res.send(file);
+}).listen(3000);
 console.log('starting server on port 3000');
