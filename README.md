@@ -38,6 +38,10 @@ var compression = require('compression-zlib')
 
 Returns the compression middleware using the given `options`.
 
+This middleware will never compress responses that include a `Cache-Control`
+header with the [`no-transform` directive](https://tools.ietf.org/html/rfc7234#section-5.2.2.4),
+as compressing will transform the body.
+
 #### Options
 
 `compression()` accepts these properties in the options object. In addition to

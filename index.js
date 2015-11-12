@@ -22,6 +22,13 @@ var vary = require('vary');
 var zlib = require('zlib');
 
 /**
+ * Module variables.
+ * 
+ * @private
+ */
+var cacheControlNoTransformRegExp = /(?:^|,)\s*?no-transform\s*?(?:,|$)/;
+
+/**
  * Add bufferred listeners to stream
  */
 function addListeners(stream, on, listeners) {
@@ -154,6 +161,12 @@ function compression(options) {
         return nocompress('filtered');
       }
 
+      // determine if the entity should be transformed
+      if (!shouldTransform(req, res)) {
+        nocompress('no transform');
+        return;
+      }
+
       // vary
       vary(res, 'Accept-Encoding');
 
@@ -233,3 +246,16 @@ function shouldCompress(req, res) {
   return true;
 }
 module.exports.filter = shouldCompress;
+
+/**
+ * Determine if the entity should be transformed.
+ * 
+ * @private
+ */
+function shouldTransform(req, res) {
+
+  var cacheControl = res.getHeader('Cache-Control');
+  // Don't compress for Cache-Control: no-transform
+  // https://tools.ietf.org/html/rfc7234#section-5.2.2.4
+  return !cacheControl || !cacheControlNoTransformRegExp.test(cacheControl);
+}

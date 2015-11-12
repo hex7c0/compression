@@ -316,7 +316,7 @@ describe(
 
       request(server).get('/').set('Accept-Encoding', 'gzip').expect(
         'Transfer-Encoding', 'chunked').expect('Content-Encoding', 'gzip')
-      .expect(shouldHaveBodyLength(len)).expect(200, buf.toString(), done)
+          .expect(shouldHaveBodyLength(len)).expect(200, buf.toString(), done)
     })
 
     it('should transfer large bodies with multiple writes', function(done) {
@@ -338,7 +338,7 @@ describe(
 
       request(server).get('/').set('Accept-Encoding', 'gzip').expect(
         'Transfer-Encoding', 'chunked').expect('Content-Encoding', 'gzip')
-      .expect(shouldHaveBodyLength(len * 4)).expect(200, done)
+          .expect(shouldHaveBodyLength(len * 4)).expect(200, done)
     })
 
     describe(
@@ -529,7 +529,7 @@ describe(
         })
 
         request(server).get('/').set('Accept-Encoding', 'gzip, deflate')
-        .expect('Content-Encoding', 'gzip', done)
+            .expect('Content-Encoding', 'gzip', done)
       })
     })
 
@@ -546,7 +546,43 @@ describe(
         })
 
         request(server).get('/').set('Accept-Encoding', 'deflate, gzip')
-        .expect('Content-Encoding', 'gzip', done)
+            .expect('Content-Encoding', 'gzip', done)
+      })
+    })
+
+    describe('when "Cache-Control: no-transform" response header', function() {
+
+      it('should not compress response', function(done) {
+
+        var server = createServer({
+          threshold: 0
+        }, function(req, res) {
+
+          res.setHeader('Cache-Control', 'no-transform')
+          res.setHeader('Content-Type', 'text/plain')
+          res.end('hello, world')
+        })
+
+        request(server).get('/').set('Accept-Encoding', 'gzip').expect(
+          'Cache-Control', 'no-transform').expect(
+          shouldNotHaveHeader('Content-Encoding')).expect(200, 'hello, world',
+          done)
+      })
+
+      it('should not set Vary headerh', function(done) {
+
+        var server = createServer({
+          threshold: 0
+        }, function(req, res) {
+
+          res.setHeader('Cache-Control', 'no-transform')
+          res.setHeader('Content-Type', 'text/plain')
+          res.end('hello, world')
+        })
+
+        request(server).get('/').set('Accept-Encoding', 'gzip').expect(
+          'Cache-Control', 'no-transform').expect(shouldNotHaveHeader('Vary'))
+            .expect(200, done)
       })
     })
 
