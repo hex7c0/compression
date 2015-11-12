@@ -159,7 +159,7 @@ describe(
       }, function(req, res) {
 
         res.setHeader('Content-Type', 'text/plain')
-        res.on('close', function() {
+        res.once('close', function() {
 
           res.write('hello, ')
           res.end('world')

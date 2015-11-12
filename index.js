@@ -71,7 +71,7 @@ function compression(options) {
   var threshold = typeof opts.threshold === 'string' ? bytes(opts.threshold)
     : opts.threshold;
 
-  if (threshold == null) {
+  if (threshold === null) {
     threshold = 1024;
   }
 
