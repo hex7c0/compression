@@ -1,4 +1,4 @@
-# [compression-zlib](http://supergiovane.tk/#/compression-zlib)
+# [compression-zlib](https://github.com/hex7c0/compression-zlib)
 
 [![NPM version](https://img.shields.io/npm/v/compression-zlib.svg)](https://www.npmjs.com/package/compression-zlib)
 [![Linux Status](https://img.shields.io/travis/hex7c0/compression-zlib.svg?label=linux)](https://travis-ci.org/hex7c0/compression-zlib)

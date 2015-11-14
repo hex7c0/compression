@@ -1,5 +1,5 @@
 {
-  "version": "2.2.0",
+  "version": "2.3.0",
   "name": "compression-zlib",
   "description": "Node.js compression middleware",
   "keywords": [
@@ -7,7 +7,7 @@
     "zlib"
   ],
   "preferGlobal": false,
-  "homepage": "http://supergiovane.tk/#/compression-zlib",
+  "homepage": "https://github.com/hex7c0/compression-zlib",
   "author": {
     "name": "hex7c0",
     "email": "hex7c0@gmail.com",

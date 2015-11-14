@@ -1,3 +1,14 @@
+v2.3.0 / 2015-11-14
+==================
+
+  * `grunt` support
+  * Update `bytes`@2.2.0
+  * Update `accepts`@1.3.0
+  * Update `compressible`@2.0.6
+  * Update `vary`@1.1.0
+  * deps: `on-headers`@1.0.1
+  * Test `node`@5
+
 v2.2.0 / 2015-09-12
 ==================
 
