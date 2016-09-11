@@ -239,7 +239,7 @@ describe(
     it('should back-pressure when uncompressed', function(done) {
 
       var buf;
-      var clinet;
+      var client;
       var drained = false;
       var resp;
       var server = createServer({
