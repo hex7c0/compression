@@ -1,3 +1,11 @@
+v2.4.0 / 2016-09-11
+==================
+
+  * Tested against `node`@6
+  * Update `bytes`@2.4.0
+  * Update `accepts`@1.3.3
+  * Update `compressible`@2.0.8
+
 v2.3.0 / 2015-11-14
 ==================
 
@@ -12,7 +20,7 @@ v2.3.0 / 2015-11-14
 v2.2.0 / 2015-09-12
 ==================
 
-  * Test `node`@4
+  * Tested against `node`@4
   * Update `accepts`@1.2.13
 
 v2.1.1 / 2015-08-08
