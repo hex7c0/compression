@@ -8,7 +8,7 @@
 
 This repository began as a fork of [expressjs/compression](https://github.com/expressjs/compression)
 with little difference:
- - `available` - **Array** Set available compression algorithm *(default "['gzip', 'identity']")*
+ - `available` - **Array** Set available compression algorithm *(default "['gzip', 'deflate', 'identity']")*
  - `zlib` - **Object** Set zlib options *(look at [benchmark](benchmark))*
 
 Node.js compression middleware.
@@ -129,6 +129,11 @@ is not set appropriately.
 The byte threshold for the response body size before compression is considered
 for the response, defaults to `1kb`. This is a number of bytes, any string
 accepted by the [bytes](https://www.npmjs.com/package/bytes) module, or `false`.
+
+**Note** this is only an advisory setting; if the response size cannot be determined
+at the time the response headers are written, then it is assumed the response is
+_over_ the threshold. To guarantee the response size can be determined, be sure
+set a `Content-Length` response header.
 
 ##### windowBits
 
