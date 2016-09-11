@@ -33,7 +33,7 @@ var cacheControlNoTransformRegExp = /(?:^|,)\s*?no-transform\s*?(?:,|$)/;
  */
 function addListeners(stream, on, listeners) {
 
-  for (var i = 0; i < listeners.length; ++i) {
+  for (var i = 0, ii = listeners.length; i < ii; ++i) {
     on.apply(stream, listeners[i]);
   }
   return;
@@ -62,14 +62,13 @@ function compression(options) {
 
   var opts = options || Object.create(null);
   var filter = opts.filter || shouldCompress;
-  var available = opts.available || [ 'gzip', 'identity' ];
+  var available = opts.available || [ 'gzip', 'deflate', 'identity' ];
   var zlib_options = opts.zlib || {
     level: zlib.Z_BEST_SPEED,
     memLevel: zlib.Z_MAX_MEMLEVEL,
     strategy: zlib.Z_FILTERED
   };
-  var threshold = typeof opts.threshold === 'string' ? bytes(opts.threshold)
-    : opts.threshold;
+  var threshold = bytes.parse(opts.threshold);
 
   if (threshold === null) {
     threshold = 1024;
@@ -80,10 +79,11 @@ function compression(options) {
     var ended = false;
     var length;
     var listeners = [];
-    var write = res.write;
-    var on = res.on;
-    var end = res.end;
     var stream;
+
+    var _end = res.end;
+    var _on = res.on;
+    var _write = res.write;
 
     // flush
     res.flush = function flush() {
@@ -102,8 +102,8 @@ function compression(options) {
       if (!this._header) {
         this._implicitHeader();
       }
-      return stream ? stream.write(new Buffer(chunk, encoding)) : write.call(
-        res, chunk, encoding);
+      return stream ? stream.write(new Buffer(chunk, encoding)) : _write.call(
+        this, chunk, encoding);
     };
 
     res.end = function(chunk, encoding) {
@@ -121,7 +121,7 @@ function compression(options) {
       }
 
       if (!stream) {
-        return end.call(this, chunk, encoding);
+        return _end.call(this, chunk, encoding);
       }
 
       // mark ended
@@ -131,10 +131,10 @@ function compression(options) {
       return chunk ? stream.end(new Buffer(chunk, encoding)) : stream.end();
     };
 
-    res.on = function(type, listener) {
+    res.on = function on(type, listener) {
 
       if (!listeners || type !== 'drain') {
-        return on.call(this, type, listener);
+        return _on.call(this, type, listener);
       }
 
       if (stream) {
@@ -149,12 +149,11 @@ function compression(options) {
     function nocompress(msg) {
 
       debug('no compression: %s', msg);
-      addListeners(res, on, listeners);
+      addListeners(res, _on, listeners);
       listeners = null;
-      return;
     }
 
-    onHeaders(res, function() {
+    onHeaders(res, function onResponseHeaders() {
 
       // determine if request is filtered
       if (!filter(req, res)) {
@@ -173,8 +172,7 @@ function compression(options) {
       // content-length below threshold
       if (Number(res.getHeader('Content-Length')) < threshold
         || length < threshold) {
-        nocompress('size below threshold');
-        return;
+        return nocompress('size below threshold');
       }
 
       var encoding = res.getHeader('Content-Encoding') || 'identity';
@@ -188,6 +186,11 @@ function compression(options) {
       // compression method
       var accept = accepts(req);
       var method = accept.encoding(available);
+
+      // we really don't prefer deflate
+      if (method === 'deflate' && accept.encoding([ 'gzip' ])) {
+        method = accept.encoding([ 'gzip', 'identity' ]);
+      }
 
       // negotiation failed
       if (!method || method === 'identity') {
@@ -212,19 +215,19 @@ function compression(options) {
       res.removeHeader('Content-Length');
 
       // compression
-      stream.on('data', function(chunk) {
+      stream.on('data', function onStreamData(chunk) {
 
-        if (write.call(res, chunk) === false) {
+        if (_write.call(res, chunk) === false) {
           stream.pause();
         }
-        return;
       }).on('end', function() {
 
-        return end.call(res);
+        _end.call(res);
       });
-      on.call(res, 'drain', function() {
 
-        return stream.resume();
+      _on.call(res, 'drain', function() {
+
+        stream.resume();
       });
     });
 
