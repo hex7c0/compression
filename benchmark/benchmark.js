@@ -12,6 +12,22 @@ var round = function(number) {
   return Math.round(number * 100) / 100
 };
 
+var noOptionsGzip = function(data, callback) {
+
+  var buffers = [], size = 0, gzip = new zlib.Gzip()
+
+  gzip.on('data', function(buffer) {
+
+    buffers.push(buffer)
+    size += buffer.length
+  }).on('end', function() {
+
+    callback(null, Buffer.concat(buffers, size))
+  })
+
+  gzip.write(data)
+  gzip.end()
+};
 var defaultGzip = function(data, callback) {
 
   var buffers = [], size = 0, gzip = new zlib.Gzip({
@@ -118,6 +134,22 @@ console.log();
 
 require('run-series')(
   [
+    function(done) {
+
+      benchmark('noOptionsGzip', noOptionsGzip.bind(zlib, input),
+        function(err, event) {
+
+          console.log(chalk.gray(event.target.toString()))
+          noOptionsGzip(input, function(err, compressed) {
+
+            var str = util.format('compressed size %s (%s%)',
+              bytes(compressed.length), round(compressed.length / input.length
+                * 100))
+            console.log(chalk.gray(str))
+            done()
+          })
+        })
+    },
     function(done) {
 
       benchmark('defaultGzip', defaultGzip.bind(zlib, input), function(err,
