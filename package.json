@@ -44,8 +44,8 @@
   },
   "scripts": {
     "prepublish": "npm prune",
-    "test": "mocha --bail --check-leaks",
-    "test-cov": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly"
+    "test": "mocha --bail --globals client --check-leaks",
+    "test-cov": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --globals supergiovane"
   },
   "license": "MIT"
 }
