@@ -1,7 +1,7 @@
 # [compression-zlib](https://github.com/hex7c0/compression-zlib)
 
 [![NPM version](https://img.shields.io/npm/v/compression-zlib.svg)](https://www.npmjs.com/package/compression-zlib)
-[![Linux Status](https://img.shields.io/travis/hex7c0/compression-zlib.svg?label=linux)](https://travis-ci.org/hex7c0/compression-zlib)
+[![Linux Status](https://img.shields.io/travis/hex7c0/compression-zlib.svg?label=linux-osx)](https://travis-ci.org/hex7c0/compression-zlib)
 [![Windows Status](https://img.shields.io/appveyor/ci/hex7c0/compression-zlib.svg?label=windows)](https://ci.appveyor.com/project/hex7c0/compression-zlib)
 [![Dependency Status](https://img.shields.io/david/hex7c0/compression-zlib.svg)](https://david-dm.org/hex7c0/compression-zlib)
 [![Coveralls](https://img.shields.io/coveralls/hex7c0/compression-zlib.svg)](https://coveralls.io/r/hex7c0/compression-zlib)
