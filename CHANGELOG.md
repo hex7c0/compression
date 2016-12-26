@@ -1,3 +1,11 @@
+v2.5.0 / 2016-12-26
+==================
+
+  * Tested against `node`@7
+  * Remove support for `node`@<4
+  * Update `debug`@2.5.2
+  * Update `compressible`@2.0.9
+
 v2.4.0 / 2016-09-11
 ==================
 
