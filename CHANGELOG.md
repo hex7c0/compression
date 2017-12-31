@@ -1,3 +1,13 @@
+v2.6.0 / 2017-12-31
+==================
+
+  * Tested against `node`@9
+  * Update `accepts`@1.3.4
+  * Update `bytes`@3.0.0
+  * Update `compressible`@2.0.12
+  * Update `debug`@3.1.0
+  * Update `vary`@1.1.2
+
 v2.5.0 / 2016-12-26
 ==================
 
